@@ -3,7 +3,7 @@ from .models import Book, Author
 
 
 class BookSerializer(serializers.HyperlinkedModelSerializer):
-    author = serializers.ReadOnlyField(source='author')
+    author = serializers.ReadOnlyField(source='author.name')
 
     class Meta:
         model = Book
@@ -11,9 +11,10 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
-    books = serializers.HyperlinkedRelatedField(
-            many=True, view_name='book-detail', read_only=True)
+    book = serializers.PrimaryKeyRelatedField(
+                    many=True,
+                    queryset=Book.objects.all())
 
     class Meta:
         model = Author
-        fields = '__all__'
+        fields = ('name', 'slug', 'book',)
